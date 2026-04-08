@@ -31,10 +31,9 @@ import { PairController } from './controller/PairController'
 import { TeamController } from './controller/TeamController'
 import { TaskController } from './controller/TaskController'
 
-const prisma = new PrismaClient()
 const ADMIN_EMAIL = 'admin@example.com'
 
-async function main() {
+export async function createApp(prisma: PrismaClient): Promise<express.Express> {
   // --- Infra ---
   const participantRepo = new PrismaParticipantRepository(prisma)
   const teamRepo = new PrismaTeamRepository(prisma)
@@ -91,9 +90,18 @@ async function main() {
     res.status(400).json({ error: err.message })
   })
 
-  app.listen(3000, () => {
-    console.log('Server is running on http://localhost:3000')
-  })
+  return app
 }
 
-main().catch(console.error)
+if (require.main === module) {
+  const prisma = new PrismaClient()
+
+  async function main() {
+    const app = await createApp(prisma)
+    app.listen(3000, () => {
+      console.log('Server is running on http://localhost:3000')
+    })
+  }
+
+  main().catch(console.error)
+}
