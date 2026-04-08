@@ -82,6 +82,14 @@ export async function createApp(prisma: PrismaClient): Promise<express.Express> 
   // --- Express ---
   const app = express()
   app.use(express.json())
+  // 課題マスタ一覧（単純な参照のため直接定義）
+  app.get('/api/task-masters', async (_req, res) => {
+    const allTaskMasters = await prisma.taskMaster.findMany({
+      select: { id: true, name: true },
+    })
+    res.json(allTaskMasters)
+  })
+
   app.use('/api', createRouter(participantController, pairController, teamController, taskController))
 
   // Error handling middleware

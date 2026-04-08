@@ -17,6 +17,19 @@ afterAll(async () => {
 })
 
 // =============================================
+// 課題マスタ一覧
+// =============================================
+describe('課題マスタ', () => {
+  it('GET /api/task-masters で課題マスタ一覧を取得できる', async () => {
+    const res = await request(app).get('/api/task-masters')
+    expect(res.status).toBe(200)
+    expect(res.body).toHaveLength(80)
+    expect(res.body[0]).toHaveProperty('id')
+    expect(res.body[0]).toHaveProperty('name')
+  })
+})
+
+// =============================================
 // 参加者の一覧取得、新規追加
 // =============================================
 describe('参加者', () => {
