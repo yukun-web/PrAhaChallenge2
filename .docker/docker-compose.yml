@@ -1,0 +1,31 @@
+version: '3.7'
+services:
+  prisma-db:
+    container_name: prisma-db
+    image: postgres:15
+    ports:
+      - '5403:5432'
+    volumes:
+      - prisma-store:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: prisma2020
+      POSTGRES_DB: prisma
+      TZ: 'Asia/Tokyo'
+
+  prisma-test-db:
+    container_name: prisma-test-db
+    image: postgres:15
+    ports:
+      - '5402:5432'
+    volumes:
+      - prisma-test-store:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: prisma2020
+      POSTGRES_DB: prisma
+      TZ: 'Asia/Tokyo'
+
+volumes:
+  prisma-store:
+  prisma-test-store:
