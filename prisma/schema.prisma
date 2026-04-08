@@ -1,0 +1,71 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum EnrollmentStatus {
+  ENROLLED
+  ON_LEAVE
+  WITHDRAWN
+}
+
+enum ProgressStatus {
+  NOT_STARTED
+  AWAITING_REVIEW
+  COMPLETED
+}
+
+model Team {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  pairs     Pair[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Pair {
+  id           String        @id @default(uuid())
+  name         String
+  teamId       String
+  team         Team          @relation(fields: [teamId], references: [id])
+  participants Participant[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@unique([name, teamId])
+}
+
+model Participant {
+  id               String           @id @default(uuid())
+  name             String
+  email            String           @unique
+  enrollmentStatus EnrollmentStatus @default(ENROLLED)
+  pairId           String?
+  pair             Pair?            @relation(fields: [pairId], references: [id])
+  taskProgresses   TaskProgress[]
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+}
+
+model TaskMaster {
+  id             String         @id @default(uuid())
+  name           String
+  taskProgresses TaskProgress[]
+}
+
+model TaskProgress {
+  id              String         @id @default(uuid())
+  participantId   String
+  participant     Participant    @relation(fields: [participantId], references: [id])
+  taskMasterId    String
+  taskMaster      TaskMaster     @relation(fields: [taskMasterId], references: [id])
+  progressStatus  ProgressStatus @default(NOT_STARTED)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@unique([participantId, taskMasterId])
+}
