@@ -90,6 +90,23 @@ export async function createApp(prisma: PrismaClient): Promise<express.Express> 
     res.json(allTaskMasters)
   })
 
+  // 特定参加者の課題進捗一覧（単純な参照のため直接定義）
+  app.get('/api/participants/:id/task-progresses', async (req, res) => {
+    const progresses = await prisma.taskProgress.findMany({
+      where: { participantId: req.params.id },
+      include: { taskMaster: { select: { id: true, name: true } } },
+      orderBy: { taskMaster: { name: 'asc' } },
+    })
+    res.json(
+      progresses.map((tp) => ({
+        id: tp.id,
+        taskMasterId: tp.taskMaster.id,
+        taskName: tp.taskMaster.name,
+        progressStatus: tp.progressStatus,
+      })),
+    )
+  })
+
   app.use('/api', createRouter(participantController, pairController, teamController, taskController))
 
   // Error handling middleware

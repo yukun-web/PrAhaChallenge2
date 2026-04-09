@@ -50,6 +50,13 @@ export type SearchResult = {
   perPage: number
 }
 
+export type TaskProgressItem = {
+  id: string
+  taskMasterId: string
+  taskName: string
+  progressStatus: 'NOT_STARTED' | 'AWAITING_REVIEW' | 'COMPLETED'
+}
+
 // --- API functions ---
 export const api = {
   getParticipants: () => fetchApi<Participant[]>('/participants'),
@@ -80,4 +87,23 @@ export const api = {
     fetchApi<SearchResult>(
       `/participants/search?taskMasterIds=${taskMasterIds.join(',')}&progressStatus=${progressStatus}&page=${page}`,
     ),
+
+  updatePairMembers: (pairId: string, memberIds: string[]) =>
+    fetchApi<{ message: string }>(`/pairs/${pairId}/members`, {
+      method: 'PATCH',
+      body: JSON.stringify({ memberIds }),
+    }),
+
+  getParticipantTaskProgresses: (participantId: string) =>
+    fetchApi<TaskProgressItem[]>(`/participants/${participantId}/task-progresses`),
+
+  updateTaskProgress: (
+    taskProgressId: string,
+    operatorId: string,
+    status: string,
+  ) =>
+    fetchApi<{ message: string }>(`/task-progresses/${taskProgressId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ operatorId, status }),
+    }),
 }
