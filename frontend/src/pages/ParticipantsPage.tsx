@@ -1,5 +1,6 @@
 // frontend/src/pages/ParticipantsPage.tsx
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { api } from '../api/client'
 import type { Participant, TeamInfo } from '../api/client'
 import {
@@ -175,7 +176,14 @@ export function ParticipantsPage() {
               const info = p.pairId ? pairMap.get(p.pairId) : null
               return (
                 <TableRow key={p.id}>
-                  <TableCell>{p.name}</TableCell>
+                  <TableCell>
+                    <Link
+                      to={`/participants/${p.id}/tasks`}
+                      className="hover:underline font-medium"
+                    >
+                      {p.name}
+                    </Link>
+                  </TableCell>
                   <TableCell className="text-muted-foreground">{p.email}</TableCell>
                   <TableCell>
                     <Badge variant={STATUS_VARIANTS[p.status]}>
